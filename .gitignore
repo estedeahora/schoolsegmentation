@@ -50,3 +50,5 @@ analysis/_templates
 # Paper
 analysis/school-segmentation.Rmd
 analysis/school-segmentation.docx
+analysis/~$*.docx
+analysis/school-segmentation.pdf
