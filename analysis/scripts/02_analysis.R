@@ -80,7 +80,6 @@ SEC_aux <- cbind(SEC_aux, cl = SEC_CL$clus[ , "Cluster"],
 
 colnames(SEC_aux)[str_starts(colnames(SEC_aux), "Clus.")] <- paste0("Clus.", 1:4)
 
-
 # Indices de calidad de los agrupamientos ---------------------------------
 # el indice PC y MPC son mediciones de "difusidad" (fuzzy)
 I <- Fclust.index(SEC_CL, alpha = 1)

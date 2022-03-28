@@ -4,6 +4,7 @@ AUX$colores <- c("#7CAE00", "#00BFC4", "#F8766D", "#C77CFF")
 TAB <- list()
 
 # Fugiras ------------------------------------
+
   # Figure 01: Descripción de variables --------------------------------------
 
   d2 <- data.frame(SEC_MFA$quanti.var$coord,
