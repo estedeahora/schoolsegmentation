@@ -1,0 +1,45 @@
+Package: schoolsegmentation
+Title: School Segmentation Article
+Version: 0.1.0.0000
+  Authors@R:
+  person(given = "Pablo",
+         family = "Serrati",
+         role = c("cre", "aut"),
+         email = "pabloserrati@gmail.com",
+         comment = c(ORCID = "0000-0001-5300-2243"))
+Description: School Segmentation Article.
+License: MIT + file LICENSE
+ByteCompile: true
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.2
+Imports: bookdown,
+    here,
+    end,
+    factoextra (>= 1.0.7),
+    FactoMineR (>= 2.4),
+    fclust (>= 2.1.1),
+    flextable (>= 0.7.0),
+    ggpubr (>= 0.4.0),
+    ggrepel (>= 0.9.1),
+    ggspatial (>= 1.1.5),
+    gstat (>= 2.0-9),
+    kableExtra (>= 1.3.4),
+    knitr (>= 1.37),
+    missMDA (>= 1.18),
+    OasisR (>= 3.0.2),
+    officedown (>= 0.2.4),
+    officer (>= 0.4.2),
+    patchwork (>= 1.1.1),
+    readxl (>= 1.3.1),
+    rmarkdown (>= 2.13),
+    scales (>= 1.1.1),
+    segregation (>= 0.6.0),
+    sf (>= 1.0-7),
+    spdep (>= 1.2-2),
+    start,
+    tidyverse (>= 1.3.1),
+    variosig (>= 0.3-1)
+Suggests: devtools,
+    git2r
