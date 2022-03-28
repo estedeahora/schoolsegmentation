@@ -20,7 +20,7 @@ library(segregation)
 
 # Load data ---------------------------------------------
 
-load("data/school-segmentation.RData")
+load(here::here("analysis/data/school-segmentation.RData"))
 
 SEC_aux <- SEC |> select(-starts_with("N_"))
 SEC_seg <- SEC |> st_drop_geometry() |> select(ID_s, starts_with("N_"))
