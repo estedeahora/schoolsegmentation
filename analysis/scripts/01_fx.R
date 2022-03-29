@@ -7,27 +7,6 @@ wcomment <- function(cm, txt = "", author = "PS", date = Sys.Date(), comN = comm
   return(cmt_str)
 }
 
-# wtc ---------------------------------------------------------------------
-# Calcular centroide ponderado
-
-wtc <- function(g = .data, w = NULL, cl = NULL){
-  if (!(is(g, "sf")) | !(w %in% colnames(g))){
-    stop(paste("requires an sf object with at a column", w))
-  }
-  names(g)[names(g) == w] <- "w"
-  centers <- sf::st_coordinates(sf::st_centroid(g)) %>%
-    cbind(g) %>%
-    sf::st_drop_geometry() %>%
-    dplyr::group_by_at(cl) %>%
-    dplyr::summarise(X = weighted.mean(X, w),
-              Y = weighted.mean(Y, w)) %>%
-    as.data.frame() %>%
-    sf::st_as_sf(coords = c("X", "Y"), crs = sf::st_crs(g))
-
-  return(centers)
-}
-
-
 # f_seg ---------------------------------------------------------------------
 # Calculo de Mutual Information Index Total + Between + Within
 

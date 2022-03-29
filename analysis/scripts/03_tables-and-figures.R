@@ -26,7 +26,7 @@ TAB <- list()
                      colour = factor(group)),
                  x = 0, y = 0,
                  arrow = arrow(angle = 25, length = unit(0.25, "cm") ) ) +
-    geom_text_repel(data = d2 %>% filter(CONTR > m),
+    geom_text_repel(data = d2, #%>% filter(CONTR > m),
                     aes(x = Dim.1, y = Dim.2, label = variable),
                     size = 3, colour = "black") +
     facet_grid(cols = vars(group)) +
@@ -35,7 +35,8 @@ TAB <- list()
     theme(legend.position = "none",
           strip.text.x = element_text(size = 16))
 
-  ggsave(filename = "figures/01_variables.png", plot = p,
+  ggsave(filename = here::here("analysis/figures/01_variables.png"),
+         plot = p,
          width = 30, height = 12, units = "cm")
 
   rm(d2, p)
@@ -43,7 +44,7 @@ TAB <- list()
   # Figure 02: Escuelas por cluster ----------------------------------------------
 
   dat <- bind_cols(SEC_MFA$ind$coord |> data.frame(),
-                   SEC_aux |> select(cl, cl_p, SECTOR) |> st_drop_geometry())
+                   SEC_aux |> select(cl, cl_p, SECTOR))
 
   subp <- fviz_mfa_var(SEC_MFA, choice = c("quanti.var"), geom = "arrow",
                        axes = c(1,2), title = "Variables de análisis", ) +
@@ -77,9 +78,10 @@ TAB <- list()
     annotation_custom(grob = ggplotGrob(subp),
                       ymin = 2, ymax = 4.5, xmin = -3, xmax = -0.5)
 
-
-  ggsave(filename = "figures/02_esc-x-cluster.png", plot = p,
+  ggsave(filename = here::here("analysis/figures/02_esc-x-cluster.png"),
+         plot = p,
          width = 30, height = 25, units = "cm")
+
   rm(p, subp, dat)
 
 # Tablas -------------------------------------

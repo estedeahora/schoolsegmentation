@@ -7,10 +7,10 @@ library(officedown)
 
 library(ggpubr)
 library(ggrepel)
-library(patchwork)
 
 library(tidyverse)
-library(sf)
+# library(sf)
+# library(patchwork)
 
 library(FactoMineR)
 library(factoextra)
@@ -23,22 +23,44 @@ library(segregation)
 load(here::here("analysis/data/school-segmentation.RData"))
 
 SEC_aux <- SEC |> select(-starts_with("N_"))
-SEC_seg <- SEC |> st_drop_geometry() |> select(ID_s, starts_with("N_"))
+SEC_seg <- SEC |>select(ID_s, starts_with("N_"))
+
+# Grupos ------------------------------------------------------------------
+
+  # # Group names
+  # n_GRUP <- c("Origen", "Rendimiento", "Homogeneidad",
+  #             "Ubicacion", "Estructura", "Oferta", "Desgranamiento",
+  #             "TH", "Sector", "Continuidad", "Turno",
+  #             "Título", "Subsidio/Coop", "Homogeneidad (cuali)")
+  GRUPO <- AUX$GRUPO |>
+    arrange(ACTIVA, DIM_LAB, CLASE) |>
+    count(ACTIVA, DIM_LAB, CLASE) |>
+    mutate(GRUPO = case_when(ACTIVA == 1 ~ as.character(DIM_LAB),
+                             CLASE == "s" ~ paste0(DIM_LAB, " (sup.)"),
+                             CLASE == "n" ~ paste0(DIM_LAB, " (sup. cualit.)") ),
+           id_g = 1:n())
+
+  GRUPO$n[12] <- 11
+
 
 # Impute missing values with PCA ------------------------
 
   # Active variables names
-  varact <- SEC_aux %>%
-    st_drop_geometry() %>%
-    select(SINP:M) %>%
-    names()
+  varact <- AUX$GRUPO |>
+    filter(Secundaria == "x") |>
+    select(`Nombre de la variable`) |>
+    simplify() |>
+    unname()
+  # varact <- SEC_aux |>
+  #   # select(SINP:M) %>%
+  #   select(all_of() )
+  #   names()
 
   # Impute marker
   imputado <- is.na(SEC_aux[varact]) %>% apply(., 1, sum)
 
   # Imputation
   SEC_aux[varact] <- SEC_aux[varact] |>
-    st_drop_geometry() |>
     imputePCA(scale = T, ncp = 4) |>
     pluck("completeObs")
 
@@ -48,24 +70,16 @@ SEC_seg <- SEC |> st_drop_geometry() |> select(ID_s, starts_with("N_"))
 
 # MFA para segmentación --------------------------------------
 
-  # Group names
-  n_GRUP <- c("Origen", "Rendimiento", "Homogeneidad",
-              "Ubicacion", "Estructura", "Oferta", "Desgranamiento",
-              "TH", "Sector", "Continuidad", "Turno",
-              "Título", "Subsidio/Coop", "Homogeneidad (cuali)")
-  # MFA
   SEC_MFA <- SEC_aux |>
     select(-ID_s) |>
-    st_drop_geometry() |>
-    MFA(group = c(11, 17, 6,
-                  2, 5, 4, 1,
-                  1, 1, 1, 5, 4, 2, 2),
-        type = c(rep("s", 7), rep("n", 7)),
-        name.group = n_GRUP,
-        num.group.sup = c(4:14 ),
+    # select(SINP:TIT_TECNICO) |>
+    MFA(group = GRUPO$n,
+        type = as.character(GRUPO$CLASE),
+        name.group = GRUPO$GRUPO,
+        num.group.sup = 4:12,
         graph = F)
 
-  rm(n_GRUP)
+  rm(GRUPO)
 
 # Armado de fuzzy cluster -----------------------------------------
 
@@ -86,7 +100,6 @@ I <- Fclust.index(SEC_CL, alpha = 1)
 
 # Descripción de clusters:
 D <- SEC_aux %>%
-  st_drop_geometry() %>%
   group_by(cl) %>%
   summarise(Cl.Size = n(),
             Cl.Student = sum(n),
@@ -104,8 +117,7 @@ HD <- round(dist(H), 2)
 # Comparacion entre Sector y cluster
 CSec <- Fclust.compare(VC = SEC_aux$SECTOR,
                        SEC_aux |>
-                         select(starts_with("Clus.")) |>
-                         st_drop_geometry()) %>%
+                         select(starts_with("Clus.")) ) %>%
   round(digits = 3)
 
 # Tabla (Sub)Sector - cluster
@@ -125,10 +137,11 @@ rm(CL_ORDEN, CSec, I, D, H, HD, SEC_CL, t1)
 # Descripción de los cluster ----------------------------------------------
 
 dat <- SEC_aux %>%
-  st_drop_geometry() %>%
-  select(cl, SINP:TIPO_HABITAT,
-         CONTINUIDAD_PRE:TIT_TECNICO,
-         SUBS, LQ_SUP) %>%
+  # select(cl, SINP:TIPO_HABITAT,
+  #        CONTINUIDAD_PRE:TIT_TECNICO,
+  #        SUBS, LQ_SUP) %>%
+  select(-ID_s, -SECTOR, -COOP, -LQ_PRI) |>
+  select(cl, everything()) |>
   mutate(SUBS = factor(SUBS,
                        levels = c("Estatal", "SI", "NO"),
                        labels = c("Estatal", "Priv. Con Subsidio",
@@ -203,7 +216,7 @@ rm(dat, i, c, b, CL_DESC)
 s_aux <- SEC_seg |>
   rename_with(.cols = -ID_s,
               .fn = ~str_remove(.x, pattern = "N_") ) |>
-  left_join(SEC_aux |> st_drop_geometry() |> select(ID_s, SECTOR, cl),
+  left_join(SEC_aux |> select(ID_s, SECTOR, cl),
             by = "ID_s") |>
   filter(!is.na(cl)) |>
     pivot_longer(cols = PRI:SUP, names_to = "group",
