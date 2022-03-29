@@ -82,42 +82,6 @@ TAB <- list()
          width = 30, height = 25, units = "cm")
   rm(p, subp, dat)
 
-  # Figure 03: Distribución espacial de cluster ---------------------------------------------------------------
-
-  b <- SEC_aux
-  anot <- b  %>%
-    filter(!is.na(cl_p) ) %>%
-    wtc("cl_p", c("cl", "SECTOR") ) %>%
-    ggplot() +
-    geom_sf(data = CARTO$COMUNA, alpha = 0.5, color = "grey50") +
-    geom_sf(data = wtc(b[!is.na(b$cl_p),], "cl_p"), shape = 3)+
-    geom_sf(data = wtc(b[!is.na(b$cl_p),], "cl_p", cl = "SECTOR"),
-            mapping = aes(shape = SECTOR ), alpha = 0.3) +
-    geom_sf(aes(color = cl, shape = SECTOR), size = 2, alpha = 0.7 ) +
-    scale_color_manual("", values = AUX$colores) +
-    scale_shape("") +
-    theme_void() +
-    guides(alpha = "none",
-           color = "none",
-           shape = "none")
-
-  p <- ggplot(SEC_aux) +
-    geom_sf(data = CARTO$COMUNA, fill = NA) +
-    geom_sf(aes(color = cl, shape = SECTOR, alpha = cl_p)) +
-    ggspatial::annotation_scale() +
-    scale_color_manual("Clúster", values = AUX$colores)+
-    scale_shape("Sector")+
-    theme_void() +
-    guides(alpha = "none") +
-    annotation_custom(grob=ggplotGrob(anot),
-                      xmin = 107300, xmax = 115000,
-                      ymin = 91400, ymax = 98500)
-
-  ggsave("figures/03_distribution.png", plot = p,
-         width = 20, height = 15, units = "cm")
-
-  rm(b, p, anot)
-
 # Tablas -------------------------------------
 
   # Table 01: Descripción clúster ----------------------------------------------
@@ -158,49 +122,9 @@ TAB <- list()
     )
 
 
-  # Tabla 02: Descripción Variables cualitativas ----------------------------
+  # Tabla 02: Alumnos por sector y clúster ----------------------------------
 
-  TAB$t2 <- C_CUALI |>
-    mutate(var_gr = rep(paste0(c("Sobre", "Debajo de"), " la media"),
-                        each = 5)) |>
-    as_grouped_data(groups = c("var_gr"), columns = NULL) |>
-    as_flextable(hide_grouplabel = T) |>
-    set_caption(caption = "Variables cualitativas características de cada Clúster",
-                autonum = run_autonum(seq_id = "tab", bkm = "DESC-CUALI",
-                                      bkm_all = T)) |>
-
-    hline(i = ~ !is.na(var_gr), border = fp_border(color = "#808080") ) |>
-    italic(i = ~ !is.na(var_gr), italic = TRUE, part = "body") |>
-    # color(i = ~ !is.na(var_gr), color = "#808080", part = "body") |>
-    bg(i = ~!is.na(var_gr), bg = "#606060", part = "body") |>
-    color(i = ~!is.na(var_gr), color = "white", part = "body") |>
-    autofit()
-
-  rm(C_CUALI)
-
-  # Tabla 03: Descripción Variables cuantitativas ----------------------------
-
-  TAB$t3 <- C_CUANTI |>
-    mutate(var_gr = rep(paste0(c("Sobre", "Debajo de"), " la media"),
-                        each = 5)) |>
-    as_grouped_data(groups = c("var_gr"), columns = NULL) |>
-    as_flextable(hide_grouplabel = T) |>
-    set_caption(caption = "Variables cuantitativas características de cada Clúster",
-                autonum = run_autonum(seq_id = "tab",
-                                      bkm = "DESC-CUANTI",
-                                      bkm_all = T)) |>
-    hline(i = ~ !is.na(var_gr), border = fp_border(color = "#808080") ) |>
-    italic(i = ~ !is.na(var_gr), italic = TRUE, part = "body") |>
-    bg(i = ~ !is.na(var_gr), bg = "#606060", part = "body") |>
-    color(i = ~ !is.na(var_gr), color = "white", part = "body") |>
-    autofit()
-
-  rm(C_CUANTI)
-
-
-  # Tabla 04: Alumnos por sector y clúster ----------------------------------
-
-  TAB$t4 <- CLUSTER$Tab_Sec |>
+  TAB$t2 <- CLUSTER$Tab_Sec |>
     flextable() |>
     set_caption(caption = "Cantidad de Alumnos por Clústers según sector de gestión",
                 autonum = run_autonum(seq_id = "tab",
@@ -219,10 +143,9 @@ TAB <- list()
                                       CLUSTER$Ind_Sec[-2]) ) ) |>
     autofit()
 
+  # Tabla 03: Segregación según modelo ---------------------------------------
 
-  # Tabla 05: Segregación según modelo ---------------------------------------
-
-  TAB$t5 <- SEGRE$t_f |>
+  TAB$t3 <- SEGRE$t_f |>
     flextable() |>
     set_caption(caption = "Porcentaje de segregación explicada por diferencia inter- e intra- grupo según modelo de agrupamiento",
                 autonum = run_autonum(seq_id = "tab",
@@ -238,9 +161,9 @@ TAB <- list()
     autofit()
 
 
-  # Tabla 06: Segregación local -inter e -intra --------------------------------
+  # Tabla 04: Segregación local -inter e -intra --------------------------------
 
-  TAB$t6 <- SEGRE$t_l %>%
+  TAB$t4 <- SEGRE$t_l %>%
     select(-p) |>
     flextable() |>
     set_caption(caption = "Segregación local -inter e -intra clúster",
