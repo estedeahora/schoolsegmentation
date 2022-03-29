@@ -23,7 +23,7 @@ Please cite this compendium as:
 
 > Serrati, P. S. (2022). *Compendium of R code and data for ¿Uno o
 > muchos sistemas? Diferencia entre escuelas en la ciudad de Buenos
-> Aires (Argentina)*. Accessed 28 mar. 2022.
+> Aires (Argentina)*. Accessed 29 mar. 2022.
 > <!-- > Online at <https://doi.org/xxx/xxx> -->
 
 ## Contents / Contenidos
@@ -43,11 +43,9 @@ The *`analysis`* directory contains:
     tablas del artículo.*
 -   [:file_folder: data](/analysis/data): Anonimiced data used in the
     analysis. The data was processed to guarantee the anonymization of
-    the original CUE. The data location that was assigned is random up
-    to 300m from the original location. // *La base de dato anonimizada
-    utilizada en el análisis. Los datos fueron procesados para
-    garantizar el anonimato del CUE original. La localización fue
-    asignada aleatoriamente hasta 300m de la ubicación original.*
+    the original CUE. // *La base de dato anonimizada utilizada en el
+    análisis. Los datos fueron procesados para garantizar el anonimato
+    del CUE original.*
 -   [:file_folder: figures](/analysis/figures): Plots and other
     illustrations. // *Figuras resultantes del análisis.*
 -   [:file_folder:
