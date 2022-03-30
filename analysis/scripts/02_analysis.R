@@ -27,11 +27,6 @@ SEC_seg <- SEC |>select(ID_s, starts_with("N_"))
 
 # Grupos ------------------------------------------------------------------
 
-  # # Group names
-  # n_GRUP <- c("Origen", "Rendimiento", "Homogeneidad",
-  #             "Ubicacion", "Estructura", "Oferta", "Desgranamiento",
-  #             "TH", "Sector", "Continuidad", "Turno",
-  #             "Título", "Subsidio/Coop", "Homogeneidad (cuali)")
   GRUPO <- AUX$GRUPO |>
     arrange(ACTIVA, DIM_LAB, CLASE) |>
     count(ACTIVA, DIM_LAB, CLASE) |>
@@ -40,8 +35,8 @@ SEC_seg <- SEC |>select(ID_s, starts_with("N_"))
                              CLASE == "n" ~ paste0(DIM_LAB, " (sup. cualit.)") ),
            id_g = 1:n())
 
+  # Corrige n() variables de título y turno
   GRUPO$n[12] <- 11
-
 
 # Impute missing values with PCA ------------------------
 
@@ -51,10 +46,6 @@ SEC_seg <- SEC |>select(ID_s, starts_with("N_"))
     select(`Nombre de la variable`) |>
     simplify() |>
     unname()
-  # varact <- SEC_aux |>
-  #   # select(SINP:M) %>%
-  #   select(all_of() )
-  #   names()
 
   # Impute marker
   imputado <- is.na(SEC_aux[varact]) %>% apply(., 1, sum)
@@ -72,8 +63,7 @@ SEC_seg <- SEC |>select(ID_s, starts_with("N_"))
 
   SEC_MFA <- SEC_aux |>
     select(-ID_s) |>
-    # select(SINP:TIT_TECNICO) |>
-    MFA(group = GRUPO$n,
+    MFA(group = GRUPO$n, ncp = 10,
         type = as.character(GRUPO$CLASE),
         name.group = GRUPO$GRUPO,
         num.group.sup = 4:12,
@@ -83,7 +73,9 @@ SEC_seg <- SEC |>select(ID_s, starts_with("N_"))
 
 # Armado de fuzzy cluster -----------------------------------------
 
-SEC_CL <- Fclust(SEC_MFA$ind$coord[ , 1:4], k = 4, noise = T)
+SEC_CL <- Fclust(SEC_MFA$ind$coord[ , 1:4],
+                 type = "gk",
+                 k = 4, noise = T)
 
 CL_ORDEN <- order(SEC_CL$H[, 1])
 SEC_aux <- cbind(SEC_aux, cl = SEC_CL$clus[ , "Cluster"],
@@ -219,30 +211,30 @@ s_aux <- SEC_seg |>
   left_join(SEC_aux |> select(ID_s, SECTOR, cl),
             by = "ID_s") |>
   filter(!is.na(cl)) |>
-    pivot_longer(cols = PRI:SUP, names_to = "group",
-                 values_to = "peso")
+  pivot_longer(cols = PRI:SUP, names_to = "group",
+               values_to = "peso")
 
 # Global = Between Seg + Within Seg
 SEGRE <- list()
 
 SEGRE$t_f <- cbind(I = c("Sólo Agrupamiento", "Sólo Sector",
-                   "Agrupamiento + Sector"),
-             rbind(f_seg(db = s_aux, VAR = "cl"),
-                   f_seg(db = s_aux, VAR = "SECTOR"),
-                   f_seg(db = s_aux, VAR = c("cl", "SECTOR"))))  |>
-        mutate(Prop_ENTRE = round(Between / Global * 100, 1),
-               Prop_DENTRO = round(Within / Global * 100, 1)) %>%
-        select(I, Prop_ENTRE, Prop_DENTRO)
+                         "Agrupamiento + Sector"),
+                   rbind(f_seg(db = s_aux, VAR = "cl"),
+                         f_seg(db = s_aux, VAR = "SECTOR"),
+                         f_seg(db = s_aux, VAR = c("cl", "SECTOR"))))  |>
+  mutate(Prop_ENTRE = round(Between / Global * 100, 1),
+         Prop_DENTRO = round(Within / Global * 100, 1)) %>%
+  select(I, Prop_ENTRE, Prop_DENTRO)
 
 # Local
 SEGRE$t_l <- mutual_local(s_aux, group = "group", unit = "cl",
-                    weight = "peso", se =F, wide = T) %>%
-          select(cl, p, Inter = ls) %>%
-          mutate(cl = paste("Clúster", cl),
-                 Intra = map_dbl(1:4,
-                                 \(x) mutual_total(data = s_aux[s_aux$cl == x, ],
-                                                   group = "group", unit = "ID_s",
-                                                   weight = "peso", se = F)$est[1] )
-                 )
+                          weight = "peso", se =F, wide = T) %>%
+  select(cl, p, Inter = ls) %>%
+  mutate(cl = paste("Clúster", cl),
+         Intra = map_dbl(1:4,
+                         \(x) mutual_total(data = s_aux[s_aux$cl == x, ],
+                                           group = "group", unit = "ID_s",
+                                           weight = "peso", se = F)$est[1] )
+  )
 
 rm(s_aux, SEC_seg)
