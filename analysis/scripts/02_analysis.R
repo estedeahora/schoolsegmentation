@@ -1,16 +1,10 @@
 # Package -----------------------------------------------------------------
 
 library(flextable)
-library(knitr)
 library(officer)
-library(officedown)
-
-library(ggpubr)
-library(ggrepel)
 
 library(tidyverse)
-# library(sf)
-# library(patchwork)
+library(ggrepel)
 
 library(FactoMineR)
 library(factoextra)
@@ -20,10 +14,34 @@ library(segregation)
 
 # Load data ---------------------------------------------
 
-load(here::here("analysis/data/school-segmentation.RData"))
+if(!exists("AUX")) AUX <- list()
 
-SEC_aux <- SEC |> select(-starts_with("N_"))
-SEC_seg <- SEC |>select(ID_s, starts_with("N_"))
+AUX$GRUPO <- read.csv(here::here("analysis/data/dimensions.csv")) |>
+  mutate(CLASE = factor(CLASE, levels = c("s", "n")),
+         DIM_LAB = factor(DIM_LAB, levels = unique(DIM_LAB) ) )
+
+SCHOOLS <- read.csv(here::here("analysis/data/schools.csv")) |>
+  mutate(across(.cols = c(LQ_PRI, LQ_SUP),
+                .fns = ~factor(.x, levels = c( "Alto", "Medio", "Bajo"))),
+         COOP = factor(COOP, levels = c("c/PJ","s/PJ",  "NO") ),
+
+         SUBS = factor(SUBS, levels = c("Estatal", "NO", "SI") ),
+         TIPO_HABITAT = factor(TIPO_HABITAT,
+                               levels = c("Ciudad Central",
+                                          "Centro Administrativo y de Negocios",
+                                          "Residencial alto",
+                                          "Residencial medio",
+                                          "Residencial bajo",
+                                          "Conjunto Habitacional",
+                                          "Popular de Origen Informal")),
+         SECTOR  = factor(SECTOR, levels = c("Estatal", "Privado"))
+         )
+
+SEC_aux <- SCHOOLS |> select(-starts_with("N_"))
+SEC_seg <- SCHOOLS |>select(ID_s, starts_with("N_"))
+
+AUX$SCHOOLS <- SCHOOLS
+rm(SCHOOLS)
 
 # Grupos ------------------------------------------------------------------
 
@@ -35,15 +53,12 @@ SEC_seg <- SEC |>select(ID_s, starts_with("N_"))
                              CLASE == "n" ~ paste0(DIM_LAB, " (sup. cualit.)") ),
            id_g = 1:n())
 
-  # Corrige n() variables de título y turno
-  GRUPO$n[12] <- 11
-
 # Impute missing values with PCA ------------------------
 
   # Active variables names
   varact <- AUX$GRUPO |>
-    filter(Secundaria == "x") |>
-    select(`Nombre de la variable`) |>
+    filter(Tipo == "x") |>
+    select(VAR) |>
     simplify() |>
     unname()
 
@@ -66,7 +81,7 @@ SEC_seg <- SEC |>select(ID_s, starts_with("N_"))
     MFA(group = GRUPO$n, ncp = 10,
         type = as.character(GRUPO$CLASE),
         name.group = GRUPO$GRUPO,
-        num.group.sup = 4:12,
+        num.group.sup = GRUPO$id_g[GRUPO$ACTIVA != 1],
         graph = F)
 
   rm(GRUPO)
@@ -129,34 +144,37 @@ rm(CL_ORDEN, CSec, I, D, H, HD, SEC_CL, t1)
 # Descripción de los cluster ----------------------------------------------
 
 dat <- SEC_aux %>%
-  # select(cl, SINP:TIPO_HABITAT,
-  #        CONTINUIDAD_PRE:TIT_TECNICO,
-  #        SUBS, LQ_SUP) %>%
-  select(-ID_s, -SECTOR, -COOP, -LQ_PRI) |>
+  select(-ID_s, -SECTOR, -COOP, -LQ_PRI,
+         -cl_p, -starts_with("Clus.")) |>
   select(cl, everything()) |>
   mutate(SUBS = factor(SUBS,
                        levels = c("Estatal", "SI", "NO"),
                        labels = c("Estatal", "Priv. Con Subsidio",
                                   "Priv. Independiente")))
 
+# Generar descripción de variables
 CL_DESC <- catdes(dat, 1)
 
-# Variables
+# Agregar Nombres Human-readable a variables
 for(i in c("test.chi2", "quanti.var")){
   CL_DESC[[i]] <- CL_DESC[[i]] %>%
     as_tibble(rownames = "VAR") %>%
-    left_join(AUX$lab, by = "VAR")
+    left_join(AUX$GRUPO |> select(VAR, IND_LAB),
+              by = "VAR")
 }
 
-# Variables descriptivas cuantitativas
+# Agregar Nombres Human-readable a descripción de
+#   clúster por variables cuantitativas
 for(i in 1:length(CL_DESC$quanti)){
   CL_DESC$quanti[[i]] <- CL_DESC$quanti[[i]] %>%
     as_tibble(rownames = "VAR") %>%
-    left_join(AUX$lab, by = "VAR")
+    left_join(AUX$GRUPO |> select(VAR, IND_LAB),
+              by = "VAR")
 }
 names(CL_DESC$quanti) <- paste0("Clus.", 1:4)
 
-# Variables descriptivas cualitativas
+# Agregar Nombres Human-readable a descripción de
+#   clúster por variables cualitativas
 for(i in 1:length(CL_DESC$category )){
   CL_DESC$category[[i]] <- CL_DESC$category[[i]] %>%
     as_tibble(rownames = "V") %>%
@@ -165,14 +183,14 @@ for(i in 1:length(CL_DESC$category )){
            CAT = case_when(CAT %in% c("FALSE", "NO") ~ "No",
                            CAT %in% c("TRUE", "SI") ~ "Sí",
                            T ~ CAT)  ) %>%
-    left_join(AUX$lab, by = "VAR") %>%
+    left_join(AUX$GRUPO |> select(VAR, IND_LAB),
+              by = "VAR") %>%
     filter(CAT != "NA" &
              !(str_starts(VAR, "T_" ) & CAT == "No") &
              !(str_starts(VAR, "TIT_" ) & CAT == "No") &
-
              !(str_starts(VAR, "CONTINUIDAD_" ) &
                  CAT == "No")) %>%
-    mutate(Indicador = paste(Indicador, CAT, sep = ": "))
+    mutate(IND_LAB = paste(IND_LAB, CAT, sep = ": "))
 }
 names(CL_DESC$category) <- paste0("Clus.", 1:4)
 
@@ -184,19 +202,19 @@ for(i in 1:4){
   b <- CL_DESC$quanti[[i]]
   C_CUANTI[1:10, c] <- b[c(1:5, ((nrow(b)-4):nrow(b))), ]  %>%
     mutate(X_ = `Mean in category`,
-           X_ = ifelse(str_starts(Indicador, "%"),
+           X_ = ifelse(str_starts(IND_LAB, "%"),
                        X_ * 100, X_),
            X_ = ifelse(X_ > 1, round(X_, 1), round(X_, 3)),
-           Indicador = paste(Indicador,
+           IND_LAB = paste(IND_LAB,
                              round(X_, 3),
                              sep = ": ")) %>%
-    select(Indicador)
+    select(IND_LAB)
   b <- CL_DESC$category[[i]]
   C_CUALI[1:10, c] <- b[c(1:5, ((nrow(b)-4):nrow(b))), ]  %>%
-    mutate(Indicador = paste(Indicador, " (",
+    mutate(IND_LAB = paste(IND_LAB, " (",
                              round(`Mod/Cla`, 1), "%)",
                              sep = "")) %>%
-    select(Indicador)
+    select(IND_LAB)
 }
 
 SEC_MFA$CL_DESC <- CL_DESC
