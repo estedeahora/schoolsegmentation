@@ -1,9 +1,11 @@
+# Tablas y figuras del artículo principal
+
 # General settings -------------------------------------------------------------
 
 AUX$colores <- c("#7CAE00", "#00BFC4", "#F8766D", "#C77CFF")
 TAB <- list()
 
-# Fugiras ------------------------------------
+# Figuras ------------------------------------
 
   # Figure 01: Descripción de variables --------------------------------------
 
@@ -179,3 +181,4 @@ TAB <- list()
     align(j = 2:3, align = "center", part = "all") |>
     colformat_double(digits = 3) |>
     autofit()
+
