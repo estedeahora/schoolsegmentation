@@ -1,0 +1,269 @@
+---
+title: "Material suplementario: ¿Uno o muchos sistemas? Diferencia entre escuelas en la ciudad de Buenos Aires (Argentina)"
+
+subtitle: "Suplementary material: One or many systems? Difference between schools in Buenos Aires (Argentina)"
+
+author: "Pablo S. Serrati"
+date: "`r paste('Última actualización:', format(Sys.time(), '%d %B, %Y'))`"
+
+output:
+  html_document:
+    # toc: true
+    # toc_float: true
+    number_sections: false
+
+
+
+lang: es
+---
+
+# {.tabset .tabset-fade}
+
+<br>
+
+Este página contiene el material suplementario de mi artículo:
+
+_This page contains the suplementary material for my paper:_
+
+Para citar:
+
+> Serrati, P. S. (2022). _¿Uno o muchos sistemas? Diferencia entre escuelas en la ciudad de Buenos Aires (Argentina)_. En revisión
+
+## Anexo A: Dimensiones e indicadores 
+
+### Dimensiones e indicadores
+
+En este Apéndice presentamos la construcción de los indicadores utilizados en el análisis de segmentación. El listado completo de los indicadores puede consultarse en la Tabla \@ref(tab:dimensiones).
+
+Un aspecto metodológico central al considerar estos indicadores es la dificultad de utilizarlos de modo unívoco para entender la realidad de las distintas escuelas. En este sentido, como señala @Bourdieu2002 [pp. 15-20], el significado específico de un indicador puede variar en función del contexto en el cual es utilizado. En particular respecto al campo educativo, diferentes autores [ver por ejemplo @Veleda2012; o @Braslavsky2019] señalan la existencia de una desarticulación institucional entre los niveles y de una diferenciación horizontal entre las jurisdicciones, lo cual lleva a que el uso de indicadores comunes entre estas instancias sea difícil de llevar a adelante. Como un ejemplo de esta dificultad para la comparación interjurisdiccional, recordemos simplemente que las dos jurisdicciones que comparten el Área Metropolitana del Gran Buenos Aires no tienen una estructura común en lo referido a la cantidad de años necesarios para la acreditación de los niveles primario y secundario. Una situación similar encontramos respecto a los métodos de selección docente, donde ambas jurisdicciones tienen normativas con lógicas heterogéneas.
+
+A su vez, al interior de la CABA encontramos que la propia división del sistema en los dos tipos de gestión funciona como un obstáculo para el análisis empírico unificado y la definición de indicadores. Si bien nuestro análisis parece señalar que la diferencia entre sectores de gestión no es el principal factor para diferenciar las características de la oferta educativa, es necesario tener presente que a la hora de definir los indicadores estos pueden tener un significado muy diferente en función de la existencia de sistemas de normas y reglamentaciones diferentes entre ambos sectores de gestión. En este sentido, la diferencias entre los tipos de gestión en lo que respecta a las formas de contratación y selección docente vuelven casi inconmensurables ambas realidades.
+
+Tomando en cuenta estas limitaciones, en nuestro análisis utilizamos como variables activas del MFA aquellos indicadores que tienen un comportamiento similar en ambos tipos de gestión. Por su parte, los otros indicadores han sido incorporados como variables suplementarios en el análisis (en gris en la Tabla \@ref(tab:dimensiones)).
+
+```{r dimensiones, message = FALSE}
+
+library(tidyverse)
+# library(kableExtra)
+
+TAB$A1
+```
+
+\newpage
+
+<!-- A continuación describimos brevemente cada uno de los indicadores, así como el modo de cálculo y la fuente utilizado para cada uno de ellos. -->
+
+### Descripción de indicadores por dimensión{.tabset .tabset-fade}
+
+#### 1. Origen social {.unnumbered}
+
+*Porcentaje de alumnos sin pase:* Se calcula como la cantidad de alumnos inscriptos en el ciclo lectivo 2017 que no terminaron de cursar en la escuela ni fueron dados con pase a otra escuela sobre el total de alumnos al inicio del ciclo lectivo. Son alumnos que presumiblemente quedaron desescolarizados. Fuente utilizada RA2017 base *Trayectoria*.
+
+*Promedio institucional de nivel de estudio de la madre (o padre):* Se utiliza en el cálculo el nivel de estudio de la madre (en los casos que este está ausente se utiliza el del padre) en base a datos declarados por los estudiantes en el cuestionario complementario de FEPBA/TESBA. Al tratarse de una variable ordinal, la distancia entre los diferentes niveles de estudio no puede considerarse homogénea, por lo cual se procede a asignar un valor a cada nivel de estudio mediante un *escalamiento óptimo*. Este escalado, permite tener una "distancia" (social / simbólica) que existe entre cada uno de los niveles educativos alcanzados por los padres. Para el escalamiento se consideró la primera dimensión de un *Análisis de Correspondencias* que tomó como insumo el cruce entre nivel de estudio y decil de ingreso para las personas de 25 años o más (datos de la EAH período 2012-2019). El uso de deciles se calculó para cada uno de los años considerados para garantizar la comparabilidad de los resultados. Como resultado de este análisis se generó una variable cuantitativa que fue normalizada entre 0 (sin estudio) y 10 (estudios superiores). En la Figura \@ref(fig:EDU-CA) se presentan las dos primeras dimensiones del análisis y los valores que toma el indicador para cada uno de los niveles de estudio. El resultado utilizado en el análisis de segmentación surge de promediar, para cada escuela, los valores asignados a cada nivel educativo de la madre (o padre).
+
+```{r EDU-CA, fig.cap= "Escalado del nivel educativo en función del NSE. Resultado del Análisis de Correspondencias y valores por nivel educativo", fig.pos="!H"}
+
+# p1 <- AUX$EDU_ESCALA$ESCALA %>% 
+#         select(EDU, m) %>% 
+#         mutate(m = round(m, 1)) %>% 
+#         ggtexttable(rows = NULL, theme = ttheme("light", base_size = 8),
+#                     cols = c("Nivel educativo", "Puntaje"))
+# p1 <- fviz_ca(AUX$EDU_ESCALA, title = "", repel = T,
+#               col.row = "tomato4", col.col = "darkgreen") +
+#         annotation_custom(ggplotGrob(p1), 
+#                           xmin = -0.5, xmax = -0.2, 
+#                           ymin = 0.2, ymax =0.4) 
+# 
+# nota <- "Nota: Escalamiento óptimo mediante análisis de correspondencias (re-escalado de 0 a 10),sobre tabla de contingencia entre nivel educativo y decil de ingreso. Datos de la EAH (2012-2019) para las personas de 25 años o más. Los deciles fueron calculados para cada año de la EAH."
+# 
+# ggarrange(p1, ggparagraph(nota, size = 8), nrow = 2, heights = c(7,1) )
+# 
+# rm(p1)
+```
+
+*Porcentaje de alumnos que su madre (o padre) por nivel de estudio:* Se utilizan las respuestas de los estudiantes en el cuestionario complementario de FEPBA/TESBA. Al igual que en el indicador anterior se utiliza el nivel de estudio de la madre, salvo en los casos que este datos esté ausente (donde se utiliza el nivel de estudios del padre). Sobre el total de respuestas válida se calcula el porcentaje de alumnos (a) cuya madre tiene estudios superiores completos y (b) cuya madre no tiene secundario terminado.
+
+*Porcentaje de alumnos que señalan que los responsables adultos no acompañaron su trayectoria educativa:* Este indicador se genera a partir del cuestionario complementario de estudiantes FEPBA/TESBA. Para construir el indicador se utilizan tres preguntas sobre el nivel de acompañamiento del responsable adulto, a saber: (a) les han preguntando sobre evaluaciones; (b) han mirando sus carpetas; y (c) han preguntando por dificultades en el aprendizaje. Se considera "poca atención" si en cualquiera de estos ítems los estudiantes señalan que el responsable "casi nunca" hace este acompañamiento (categoría más baja sobre escala de tres niveles).
+
+*Promedio institucional de hacinamiento en los hogares de los estudiantes:* A partir de la respuesta al cuestionario complementario de estudiantes FEPBA/TESBA la respuesta sobre el "número de personas que viven en el hogar" y el "número de habitaciones que usan para dormir".
+
+*Porcentaje de alumnos con acceso a internet en el hogar:* En base a las respuestas del cuestionario complementario de estudiantes FEPBA/TESBA se calcula el porcentaje de alumnos (sobre el total de respuestas) que declaran tener conexión a internet en el hogar.
+
+*Porcentaje de alumnos con bibliotecas grandes en el hogar:* Tomando las respuestas del cuestionario complementario de estudiantes FEPBA/TESBA se calcula el porcentaje de alumnos (sobre el total de respuestas) que declaran tener en su hogar una biblioteca "Suficiente para llenar tres o más bibliotecas (más de 200 libros)".
+
+*Porcentaje de alumnos que reciben ayuda alimentaria escolar gratuita:* Este es un indicador de la existencia e importancia de poblaciones críticas en estos establecimientos. Para su construcción se utilizan datos agregados para el total de la escuela provenientes del Relevamiento Anual 2018 (base *Población*). Se utiliza el porcentaje de alumnos que reciben cualquier tipo de asistencia alimentaria gratuita (puede ser desayuno, almuerzo, refuerzo o merienda) sobre el total de alumnos inscriptos.
+
+*Porcentaje de alumnos extranjeros sudamericanos:* En base a datos del Relevamiento Anual 2018 (base *Población*) se considera migrantes sudamericanos a aquellos nacidos en: Brasil, Bolivia, Chile, Colombia, Ecuador, Paraguay, Perú, Uruguay y Venezuela. No se considera a los nacidos en Guyana, Surinam y Trinidad y Tobago, así como los "territorios de ultramar" de países no sudamericanos.
+
+*Porcentaje de alumnos extranjeros europeos:* En base a datos del Relevamiento Anual 2018 (base *Población*) se calcula el porcentaje de alumnos sobre el total que son nacidos en Europa.
+
+*Cociente de ubicación para estudiantes con madre con primario terminado / con estudios superiores terminados:* El cociente de ubicación es un índice de diversidad social local que mide la heterogeneidad en cada una de las escuelas. A diferencia de los índices sintéticos, los índices locales permiten conocer y comparar la situación en cada una de las escuelas (sobre índices locales ver @Tivadar2019; y @Wong2002a). Para cada escuela ($i$) y cada grupo de población ($k$) el índice se calcula como:
+
+$$
+LQ_i^k= \left(\frac{x_i^k}{t_i}\right) : \left(\frac{X^k}{T}\right) = 
+\frac {p_i^k}{P^k}
+$$
+
+donde $p_i^k$ es la proporción del grupo $k$ en la escuela $i$; y $P_k$ es la misma proporción en el total de población. Para el cálculo de estos índices los grupos de población se establecieron en función del nivel educativo de la madre (y en los casos sin datos el nivel de estudio del padre), conformándose dos grupos: (a) PRI: Hasta Primaria completa (incluye secundaria incompleta); y (c) SUP: Con Nivel Superior Completo (Terciario o Universitario). Para obtener una mejor descripción de estos índices, fueron categorizados en tres grupos que aglutinan un tercio de las escuelas en cada una de las categorías (cuantil 1/3 y 2/3).
+
+*Presencia y características de la asociación cooperadora (sólo pública):* La presencia de cooperadoras, el monto de cuota establecida y el porcentaje de pago de la misma, dan cuenta de la posibilidad de acción de las poblaciones para modificar las condiciones de acceso a la educación. En este sentido, la acción diferencial de las cooperadoras, genera la posibilidad de mejoras en la oferta institucional directa e indirectamente mediante presiones con los funcionarios [@Veleda2005, pp. 31--33]. A su vez, la presencia de cooperadoras puede ser un indicador de las posibilidades socioeconómicas de sus alumnos (generando una cuota encubierta que lleve a algunas familias a evitar estas instituciones). Construido en base a datos del RA2018 (base *Estructura*), este indicador sólo se presenta para las escuelas estatales, por lo cual no se considera entres las variables activas.
+
+*Existencia de subvención estatal (sólo privada):* La presencia de una planta docente subsidiada y el porcentaje de este subsidio son indicadores de la posibilidad de pago de los alumnos y del monto de cuota. Reafirmando esta relación, en la CABA existe una relación entre el subsidio estatal y el máximo monto de cuota posible. Como señala @Veleda2005 [p. 33] los costos de las cuotas "en los distintos barrios suele guardar estrecha relación con el poder adquisitivo de la comunidad local". Construido en base a datos del RA2018 (base *Estructura*), este indicador sólo se presenta para las escuelas privadas, por lo cual no se considera entres las variables activas.
+
+#### 2. Rendimiento {.unnumbered}
+
+*Eficacia del nivel:* Este indicador es la razón de promoción del nivel entre estudiantes egresados e ingresantes. Al estar calculado sobre datos del primer y último año del RA2018 (base *Trayectoria*), el indicador se ve afectado por las fluctuaciones en la matrícula que puede tener la escuela. En este sentido, una escuela en crecimiento (con más ingresos en años recientes que en el pasado) obtendrá valores bajos que no necesariamente reflejan una menor eficacia en la promoción.
+
+*Porcentaje de alumnos (a) repitentes / (b) con sobreedad por ciclo educativo:* Se trata del porcentaje de estudiantes inscriptos que (a) repitieron el año anterior o que (b) sin ser repitentes tienen sobreedad para el año que cursan (pueden ser repetidores de años anteriores o que hayan tenido un ingreso tardío o discontinuidades en su trayectoria educativa). Los datos son tomados del RA2018 (base *Matrícula*).
+
+*Porcentaje de alumnos con promoción asistida:* Se trata del porcentaje de estudiantes sobre el total que tienen algún tipo de promoción asistida para el cursado. Estos datos son calculados sobre el total de la población inscripta y sobre la base de datos *Población* del RA2018.
+
+*Porcentaje de alumnos (a) promovido con examen / (b) no promovido / (c) dejaron el curso con pase por ciclo educativo:* Tomando la base de datos *Trayectoria* del RA2017,se calcula el porcentaje de alumnos (a) que fueron promovidos con examen final (sobre el total de estudiantes que finalizaron el año); (b) que no promovieron el año (sobre el total de estudiantes que finalizaron el año); y que dejaron el curso durante el año (sobre el total de estudiantes inscriptos al inicio del ciclo lectivo).
+
+*Porcentaje de alumnos que repitieron en el nivel primario:* Tomando los datos del cuestionario complementario de estudiantes del relevamiento TESBA, se calcula el porcentaje de estudiantes que declaran haber repetido algún año del nivel primario (respecto al total de respuestas del módulo). Este indicador es sólo para el nivel secundario.
+
+*Porcentaje de alumnos que cursaron parte del nivel en otro establecimiento:* Tomando el cuestionario complementario de estudiantes del relevamiento FEPBA/TESBA se calcula el porcentaje de estudiantes que declaran haber cursado parte del nivel actual en otra institución (se calcula sobre el total de respuestas del módulo).
+
+*Porcentaje de alumnos con niveles altos de ausentismo:* Se considera nivel alto de ausentismo a aquellos estudiantes que declaran haber faltado a clases por encima del percentil 75 (calculado sobre el total de estudiantes que responden la pregunta). Los datos son tomados del cuestionario complementario de estudiantes del relevamiento FEPBA/TESBA.
+
+*Porcentaje de alumnos que ingresan a cursar durante el transcurso del ciclo lectivo:* Se trata de estudiantes que ingresaron al curso luego de que se iniciara el ciclo lectivo (pueden ser estudiantes que no estaban inscriptos al inicio del ciclo lectivo o que debieron pedir pase de otra institución). Se calcula sobre los datos del RA2017 (base *Trayectoria*). Es un indicador polisémico que, por un lado, señala la existencia de vacantes en la escuela de destino. A su vez, puede tener diferentes significados en tanto puede dar cuenta de una mayor receptividad de la escuela a "chicos con problemas" o incluso a chicos desescolarizados (presumiblemente provenientes de situaciones sociales problemáticas). Sin embargo, también puede dar cuenta de personas que requieren cambios por movilidad laboral de los padres.
+
+*Media de los resultados obtenidos en la evaluación FEPBA/TESBA en el área de matemáticas:* Se trata del promedio de la evaluación FEPBA / TESBA en el área de matemáticas. Se elige matemáticas por ser un indicador habitualmente utilizado en los estudios internacionales y donde se presentan las mayores discrepancias entre los estudiantes.
+
+*Proporción de cargos/horas suplentes:* Este indicador permite tener una aproximación al grado de estabilidad docente y por ende de la "incomodidad" docente (que lleva a pedir licencias y a que asuman suplentes). Debido a la importancia relativa en cada uno de los niveles de las diferentes modalidades de contratación, para el análisis en Nivel Primario se consideran los "Cargos" docentes, mientras que en Nivel Secundario se utiliza el total de "Horas cátedra". La proporción de horas/cargos se considera sobre la cantidad total de cargos u horas totales de la POF. Los datos son calculados en base al Relevamiento Anual (base *Cargos*). Con el objeto de corregir valores atípicos, se considera para cada escuela el valor mediana del RA durante los años 2015 a 2018. Es importante considerar que es relativamente difícil tener una interpretación unívoca de este indicador por fuera del sector estatal (debido a las diferencias en las modalidades de contratación dentro del sector privado).
+
+*Proporción de cargos u horas en condición titular (para tareas seleccionadas):* Opuesto al anterior, este indicador da cuenta de la estabilidad docente. Fundamentalmente en el sector estatal, este indicador muestra cierta estabilidad de la planta docente y, por lo tanto, un mayor vínculo con las escuelas. Teniendo en cuenta, que esto resulta particularmente interesante en los cargos u horas docentes que presentan mayor carga horaria o mayor relación con los estudiantes, para el cálculo se consideran sólo los maestros frente a cursos y directivos. Esta decisión se ve reforzada porque estas tareas son más homogéneos en cuanto a la cantidad de horas y evita la incidencia de docentes con pocas horas. Los datos provienen del Relevamiento Anual (base *Cargos*) y, al igual que en la dimensión anterior, se considera para cada escuela el valor mediana del RA durante los años 2015 a 2018. En concreto, para nivel Primario se consideran las categorías de RA: "Maestro de Area" y "Maestro de Grado/Año" (no se incluye los maestros especiales o curriculares), mientras que los directivos incluyen a: "Director Regente"; "Director maestro con clase anexa"; "Direc. Maestro (personal Único)"; "Vicedirector/Subregente"; "Secretario"; y "Prosecretario". Por su parte, en función de las categorías disponibles en RA para las horas cátedras, en Nivel Secundario se consideraron todas las horas cátedras dentro de la planta funcional (POF), sin importar el tipo de tareas asignadas a las mismas.
+
+*Pendiente de la regresión cuadrática para la distribución porcentual de alumnos:* Para cada una de las escuelas se calculó la regresión lineal que mejor aproxima el porcentaje de alumnos en cada uno de los grados/años de estudio (se consideró sólo las escuelas con alumnos en todos los años/grados). La pendiente la pendiente permite tener un indicador del desgranamiento: un valor positivo indicaría una matrícula que crece a medida que transcurren los años de estudio y la intensidad de este crecimiento viene dado por el valor del coeficiente; un valor negativo, situación más común, indicaría la velocidad de desgranamiento. Si bien este índice de desgranamiento resulta interesante para entender el comportamiento de la matrícula y pueden señalarnos la existencia de escuelas expulsivas/receptivas, estos comportamientos pueden deberse a situaciones muy diversas que hacen difícil establecer una interpretación lineal. A su vez, la importancia de los valores absolutos (particularmente el signo) no permite la comparación estandarizada. Atendiendo a estos motivos, dichos coeficientes no fueron incluidos en los cálculos de segmentación, pero se presentan como indicadores y descriptores de los clústers resultantes.
+
+#### 3. Homogeneidad {.unnumbered}
+
+*Desviación estándar del nivel de estudio de la madre (o padre):* En base a datos de la FEPBA/TESBA se toma el nivel de estudio de la madre (o del padre cuando está ausente el anterior) y se le asigna la puntuación obtenida mediante el análisis de correspondencia en base a datos EPH (ver Figura \@ref(fig:EDU-CA) y descripción del indicador *Promedio institucional de nivel de estudio de la madre*). Con estos valores se calcula el desvío estándar para cada una de las instituciones.
+
+*Desviación estándar de resultados en evaluación escolar FEPBA /TESBA de matemáticas:* Tomando los resultados de la evaluación FEPBA/TESBA se calcula el desvío estándar de la prueba de matemáticas.
+
+*Índice de Diversidad Local de Shannon (*$L_{SW}^i$*), Índice de Entropía Local (*$H2^i$*), Índice de Interacción Local de Simpson (*$I_{S}^i$*) e Índice de información mutua (*$M^i$*):* Se trata de diferentes índices de segregación ($M^i$) o diversidad social local *(*$L_{SW}^i$; $H2^i$; $I_{S}^i$*)* de cada una de las escuelas*.* Para detalles sobre el cálculo puede consultarse @Tivadar2019 o @Wong2002a. Las Figuras \@ref(fig:SEGREGACION-PRI) y \@ref(fig:SEGREGACION-SEC) presentan la correlación entre estos índices en las escuelas analizadas para ambos niveles.
+
+```{r SEGREGACION-SEC, fig.cap = "Relación entre indicadores de segregación de Nivel Secundario", fig.pos="!H"}
+
+# AUX$GRAF$SEG_SEC
+```
+
+#### 4. Ubicación {.unnumbered}
+
+*Estatus de la zona de emplazamiento:* Para el cálculo de este indicador se consideró el déficit de vivienda cuantitativo de los radios de la CABA. Sobre estos datos se realizó una interpolación del mismo para la localización de las escuelas mediante el método Kriging. Para ello, el déficit de los radios censales fue imputado al centroide corregido (se eliminaron zonas vacías o sin población). La definición del indicador y los detalles de su construcción pueden leerse en @Marcos2018. El cálculo para los diferentes radios urbanos de Argentina ha sido realizado por @DiVirgilio2019e y se encuentra disponible en el portal *poblaciones.org*. Con los fines de tener una aproximación de la distribución de este indicador, la Figura \@ref(fig:DEFICIT) presenta los valores de déficit cuantitativo interpolados para el conjunto de la CABA.
+
+```{r DEFICIT, fig.cap = "Interplación de déficit cuantitativo (Variable 'STATUS'). (A) Izquerda: Déficit cuantitativo; (B) Derecha: Varianza de la estimación", out.width = "100%"}
+
+# include_graphics("_Figuras/7-Fig1-DEFICIT.png")
+
+```
+
+*Centralidad / accesibilidad de la institución:* Se calcula como el promedio de los tiempos de viaje (según datos de la aplicación del GCBA) desde cada una de las escuelas a cada una de las estaciones donde existen combinación de líneas en el la red de subte.[^1] La Figura \@ref(fig:ACCESIBILIDAD) presenta para cada escuela el tiempo promedio de viaje (en minutos) al conjunto de las estaciones de subte en las que convergen al menos dos líneas.
+
+[^1]: Para este cálculo se utilizó la API del GCBA, generando un procedimiento iterativo de consulta desde cada una de las escuelas de nivel primario y secundario de la ciudad. Se cuenta cada nodo de combinación una única vez, más allá del número de estaciones que compongan el nodo de combinación. Las siguientes estaciones son las elegidas como representativas de estos cruces: Perú y Plaza Miserere (Línea A); Pueyrredón y Além (Línea B); Retiro e Independencia (Línea C); Pueyrredón y 9 de Julio (Línea D); Jujuy (Línea E).
+
+```{r ACCESIBILIDAD, fig.cap = "Tiempo de viaje"}
+ 
+# subte <- CARTO$SUBTE %>% 
+#              mutate(seleccion = 
+#                       case_when(ID_E %in% c("D-PUEYRREDON", "B-PUEYRREDON", 
+#                                     "A-PLAZA DE MISERERE", "E-JUJUY",
+#                                     "D-9 DE JULIO", "A-AV. DE MAYO", 
+#                                     "C-INDEPENDENCIA", "C-RETIRO",
+#                                     "B-LEANDRO N. ALEM", "A-PERU")~ 1,
+#                                 T ~ 0) )
+#             
+# ggplot(PRI) +
+#   geom_sf(aes(fill = ACCESIBILIDAD, color = ACCESIBILIDAD),
+#           size = 4, alpha = 1) +
+#   geom_sf(data = subte, alpha = 0.4, color = "tomato3" ) +
+#   geom_sf(data = subte, aes(alpha = seleccion), color = "tomato4" ) +
+#   geom_sf(data = CARTO$COMUNA, fill = NA)+
+#   scale_fill_gradient("Tiempo de viaje\n(Minutos)",
+#                       low = "#B0EA4B", high = "#0C27F9") +
+#   scale_color_gradient(low = "#B0EA4B", high = "#0C27F9") +
+#   guides(color = FALSE, alpha = FALSE) +
+#   theme_void()
+
+```
+
+*Tipo de entorno urbano en el que está ubicado el establecimiento:* Se clasifica el emplazamiento de las escuelas tomando como base la clasificación de contextos urbanos propuesta por @Marcos2015 y presentada en el Capítulo \@ref(demanda) (ver Figura \@ref(fig:ENTORNO-MAP)).
+
+*Comuna en la que está ubicado el establecimiento:* Se considera la Comuna en la que se emplaza la escuela.
+
+#### 5. Estructura {.unnumbered}
+
+*Hacinamiento escolar:* Es un indicador de la cantidad de alumnos promedio por curso en cada escuela. Para ello se divide el número total de alumnos por la cantidad de cursos declarados en el Relevamiento Anual 2018 (base *Matrícula*).
+
+*Tamaño del establecimiento(Número de alumnos):* Se toma el número de alumnos matriculados según Relevamiento Anual 2018 (base *Matrícula*) como un indicador del tamaño de las escuelas.
+
+*Índice de recursos materiales e infraestructura:* Se toma la primera dimensión (reescalada de 0 a 10) de un Análisis de Correspondencia Múltiple en el que se incorporaron las siguientes variables activas: Electricidad en el establecimiento; Equipo de TV; Proyector; Pizarra Digital; Biblioteca con TV; Biblioteca con Proyector; Equipo de CD; Equipo de DVD; Equipo de Audio; Escaner;Impresora; Impresora 3D; Server propio; Acceso a internet (pago o gratuito); Tipo de acceso a internet; Conectividad en la administración; Conectividad en el aula; Conectividad en la Biblioteca; Conectividad en laboratorio de informática; Conectividad en otro espacio; Sala de Informática; y Biblioteca.
+
+*Cantidad de cargos de personal de apoyo y asistencia pedagógica por cada 100 alumnos:* Se toma el número de cargos que cumplen tareas de apoyo o asistencia pedagógica (no importa condición de contratación) presentes en la institución cada 100 alumnos matriculados. Los datos son calculados en base al Relevamiento Anual (base *Cargos*) y la matrícula se toma de la base Matrícula de dicho relevamiento. Es importante señalar que, a los fines de corregir valores atípicos, para los cargos docentes se considera para cada escuela el valor mediana del RA durante los años 2015 a 2018. En concreto se incluye para el nivel primario: Asistentes y Auxiliares; Maestro / Profesor para la atención de alumnos con promoción asistida/acompañada; Maestro Integrador; Maestro Recuperador; Maestro Auxiliar de Grado/Año; Maestro celador; Maestro Tutor/Orientador; Coordinador de Ciclo; Psicólogo; Asistente social; Psicopedagogo; Bibliotecario; Auxiliar docente de Lengua y/o Cultura Indígena; y Maestro/Profesor itinerante rural. Por su parte, para el nivel secundario se incluye: Auxiliar Docente; Auxiliar docente de Lengua y/o Cultura Indígena; Bibliotecario; Psicólogo; Psicopedagogo; Asesor Pedagógico; Tutor/Coordinador de Curso; Tutor de secundario rural; Preceptor; y Preceptor residente.
+
+*Cantidad de no-docentes cada 100 alumnos:* En base a los datos del Relevamiento Anual (base *Cargos*) se calcula el número de cargos no docentes (administrativos, maestranza y otros) en relación a la cantidad de alumnos de la escuela. De modo similar al indicador anterior, se utiliza el Relevamiento Anual 2018 (base *Matrícula*) para el número de alumnos de la escuela y la mediana por escuela del Relevamiento Anual 2015 a 2018 (base *Cargos*).
+
+#### 6. Oferta {.unnumbered}
+
+*Escuela plurilingüe:* Se calcula como el porcentaje de alumnos que cursan más de un idioma extranjero en la escuela. Los datos se toman del Relevamiento Anual 2018 (base *Población*).
+
+*Cantidad de cargos/hs docentes frente a curso cada 100 alumnos:* Este indicador da cuenta indirectamente del tipo de oferta de la escuela (con muchas o pocas horas de clases, con muchas o pocas materias especiales, etc). Se considera el número de cargos (para primaria) u horas docente (secundario) frente a curso cada 100 alumnos matriculados. Los datos de los cargos se toman del Relevamiento Anual, base *Cargos* (se considera la mediana por escuela para los años 2015-2018), mientras que los datos de matrícula se toman del Relevamiento Anual 2018 (base *Matrícula*). Para Nivel Primario se considera docente frente a curso todos los cargos de Maestro (Maestro de Area y Maestro de Grado/Año) y Maestro especial (Maestro Especial de Música, Maestro/Profesor de Teatro, Maestro Esp. Educación Física, Maestro/Profesor de danzas, Maestro de Lengua Extranjera, Profesor / Maestro de Lengua y/o Cultura Indígena, Maestro Esp. Activ. Prácticas, Maestro Especial de Plástica, Maestro Auxiliar de Grado/Año, Maestro de Informática y Maestro de Tecnología. Para Nivel Secundario se consideran las horas de Destinadas/os al Dictado de Formación General, Maestros/Profesores itinerantes, Destinadas/os al Dictado de Especialización Artística, Destinadas/os al Dictado de Prácticas Profesionalizantes (Talleres/TTP/IF), y Destinadas/os a Proyectos/Programas Institucionales.[^2]
+
+[^2]: Estos son incluidos porque en muchas escuelas corresponden a las particularidades de la propuesta pedagógica de la escuela (y se trata de horas efectivas de dictado de clase frente a curso en modalidades especiales)
+
+*Cantidad de cargos/hs docentes frente a curso no POF cada 100 alumnos:* Este puede ser un indicador de la existencia de una propuesta educativa basada en las horas extras, las cuales pueden pensarse como una característica de la escuela para atraer matrícula. Además, en las escuelas privadas, estos docentes son (posiblemente) pagados por los padres como materias extra curriculares. Por su parte, en las escuelas públicas puede ser indicador de "gestiones" realizada por cooperadoras y directivos con incidencia institucional. En resumen habla de la presencia en la familia y / o la institución de capitales económicos y/o sociales que pueden ser usados y movilizados para ampliar las características de la educativas. De manera similar al indicador anterior se contabiliza la cantidad de cargos (primaria) u horas (secundaria) de docentes frente a curso que no están integrados en la POF. Para el cálculo se utiliza la mediana de cargos/horas de cada escuela según el Relevamiento Anual 2015 a 2018 (base *Cargos*) y la matrícula declarada en el Relevamiento Anual 2018 (base *Matrícula*).
+
+*Proporción de varones:* Tomando como base los datos del Relevamiento Anual 2018 (base *Matrpicula*) se calcula el porcentaje de varones sobre el total de alumnos matriculados.
+
+*Continuidad pedagógica con el nivel anterior/posterior:* Se considera aquellas instituciones para las cuales existe en la misma institución (comparten CUE) o en instituciones integradas ediliciamente (mismo CUI) el nivel anterior o posterior (según el caso). Se considera inicial y secundario para el nivel primario y primario para el nivel secundario (no se cuenta el nivel superior).
+
+*Tipo de gestión del establecimiento:* Se refiere al sector de gestión del establecimiento (Estatal / Privado).
+
+*Tipo de jornada:* Se refiere a la existencia de los diferentes tipos de jornada.
+
+*Tipo de título otorgado (orientación y duración):* Se refiere al tipo de título secundario otorgado por la institución.
+
+## Anexo B: Varianza explicada por el análisis
+
+```{r}
+fviz_eig(SEC_MFA, 
+         main = "Varianza explicada por el análisis", 
+         xlab = "Dimensión", 
+         ylab = "Porcentaje de varianza explicada [%]"
+         
+          ) 
+
+```
+
+```{r}
+# a <- map_df(2:10,
+#             \(x){
+#                 Fclust(SEC_MFA$ind$coord[ , 1:4],
+#                 type = "gk", stand= 0,
+#                 k = x, noise = T) |>
+#                 Fclust.index(alpha = 1)
+#                 })
+# a |> 
+#     mutate(ID = 2:10) |> 
+#     pivot_longer(cols = - ID, names_to = "var") |> 
+#     ggplot(aes(x =ID, y = value)) +
+#     geom_line() +
+#     facet_wrap(~var, scales = "free") +
+#     scale_x_continuous(n.breaks = 10) +
+#     theme_minimal()
+```
+
+## Anexo C: Descripción de variables
+
+### Descripción de variables de cada clúster
+
+```{r DESC-CUALI}
+TAB$C1
+```
+
+```{r DESC-CUANTI}
+TAB$C2
+```
+
+<!--# El Clúster 1, se caracteriza por indicadores de clima educativo alto, que tiene como contraparte elevados niveles de segregación social. A su vez, agrupa un porcentaje superior a la media de las escuelas con doble turno, localizadas en los entornos residenciales de NSE alto y con titulaciones que implican conocimientos bilingües. Dentro de este grupo se destaca el alto porcentaje de escuelas privadas sin subsidios y valores por encima de la media en la evaluación FEPBA (y un muy bajo desvío estándar). Respecto al Clúster 2 encontramos también índices de origen social y clima educativo bastante elevados, pero sin estar acompañado de niveles altos de segregación social. También se caracteriza por un promedio en la evaluación FEPBA superior a la media y por bajos porcentajes de alumnos con riesgo educativo (más bajos que los del grupo anterior). Estas escuelas se caracterizan por titulaciones de bachiller, con predominancia de cursadas matutinas y continuidad institucional con el nivel primario. A su vez, en este grupo sobresale el porcentaje de escuelas privadas subsidiadas. El Clúster 3 se caracteriza por tener indicadores de diversidad social más elevados que el resto, acompañado de un número importante de alumnos con origen social bajo. Localizadas en entornos urbanos residenciales de NSE bajo, concentran sus cursadas en los turnos mañana y tarde y presentan resultados de la evaluación FEPBA un poco menores a la media. Por último, el Clúster 4 presenta los mayores porcentajes de alumnos con situaciones de riesgo educativo y con peores indicadores clima educativo más bajo. A su vez, se trata de escuelas con una clara predominancia del sector estatal y con ofertas en los turnos tarde, noche y vespertino. -->
