@@ -1,11 +1,11 @@
 
 # ¿Uno o muchos sistemas? Diferencia entre escuelas en la ciudad de Buenos Aires (Argentina)
 
-[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/estedeahora/schoolsegmentation/master?urlpath=rstudio)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/estedeahora/schoolsegmentation/main?urlpath=rstudio)
 
 This repository contains the data and code for my paper:
 
-*Este repositorio contiene los datos y el código de mi paper:*
+*Este repositorio contiene los datos y el código de mi artículo:*
 
 > Serrati, P. S., (2022). *¿Uno o muchos sistemas? Diferencia entre
 > escuelas en la ciudad de Buenos Aires (Argentina)*. En revisión
@@ -23,7 +23,7 @@ Please cite this compendium as:
 
 > Serrati, P. S. (2022). *Compendium of R code and data for ¿Uno o
 > muchos sistemas? Diferencia entre escuelas en la ciudad de Buenos
-> Aires (Argentina)*. Accessed 29 mar. 2022.
+> Aires (Argentina)*. Accessed 08 abr. 2022.
 > <!-- > Online at <https://doi.org/xxx/xxx> -->
 
 ## Contents / Contenidos
