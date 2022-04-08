@@ -1,7 +1,7 @@
 Package: schoolsegmentation
 Title: ¿Uno o muchos sistemas? Diferencia entre escuelas en la ciudad de Buenos Aires (Argentina)
-Version: 0.1.0.0000
-  Authors@R:
+Version: 1.0.0.0000
+Authors@R:
   person(given = "Pablo",
          family = "Serrati",
          role = c("cre", "aut"),
