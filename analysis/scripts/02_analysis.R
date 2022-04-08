@@ -5,6 +5,7 @@ library(officer)
 
 library(tidyverse)
 library(ggrepel)
+library(patchwork)
 
 library(FactoMineR)
 library(factoextra)
