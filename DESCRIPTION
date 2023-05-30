@@ -1,5 +1,5 @@
 Package: schoolsegmentation
-Title: ¿Uno o muchos sistemas? Diferencia entre escuelas en la ciudad de Buenos Aires (Argentina)
+Title: Diferencia entre escuelas en la ciudad de Buenos Aires (Argentina)
 Version: 1.0.0.0000
 Authors@R:
   person(given = "Pablo",
@@ -8,7 +8,7 @@ Authors@R:
          email = "pabloserrati@gmail.com",
          comment = c(ORCID = "0000-0001-5300-2243"))
 Description: Este repositorio contiene los datos, el código y materiales suplementarios de mi artículo: "¿Uno o muchos sistemas? Diferencia entre escuelas en la ciudad de Buenos Aires (Argentina)"
-License: MIT + file LICENSE
+License: CC-BY-4.0
 ByteCompile: true
 Encoding: UTF-8
 LazyData: true
