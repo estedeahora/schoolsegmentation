@@ -17,11 +17,13 @@ library(segregation)
 
 if(!exists("AUX")) AUX <- list()
 
-AUX$GRUPO <- read.csv(here::here("analysis/data/dimensions.csv")) |>
+AUX$GRUPO <- read.csv(here::here("analysis/data/dimensions.csv"),
+                      encoding = "latin1") |>
   mutate(CLASE = factor(CLASE, levels = c("s", "n")),
          DIM_LAB = factor(DIM_LAB, levels = unique(DIM_LAB) ) )
 
-SCHOOLS <- read.csv(here::here("analysis/data/schools.csv")) |>
+SCHOOLS <- read.csv(here::here("analysis/data/schools.csv"),
+                    encoding = "latin1") |>
   mutate(across(.cols = c(LQ_PRI, LQ_SUP),
                 .fns = ~factor(.x, levels = c( "Alto", "Medio", "Bajo"))),
          COOP = factor(COOP, levels = c("c/PJ","s/PJ",  "NO") ),
@@ -227,7 +229,7 @@ rm(dat, i, c, b, CL_DESC)
 s_aux <- SEC_seg |>
   rename_with(.cols = -ID_s,
               .fn = ~str_remove(.x, pattern = "N_") ) |>
-  left_join(SEC_aux |> select(ID_s, SECTOR, cl),
+  left_join(SEC_aux |> select(ID_s, SECTOR, cl, SUBS),
             by = "ID_s") |>
   filter(!is.na(cl)) |>
   pivot_longer(cols = PRI:SUP, names_to = "group",
@@ -237,10 +239,12 @@ s_aux <- SEC_seg |>
 SEGRE <- list()
 
 SEGRE$t_f <- cbind(I = c("Sólo Agrupamiento", "Sólo Sector",
+                         "Sólo Subsector",
                          "Agrupamiento + Sector"),
                    rbind(f_seg(db = s_aux, VAR = "cl"),
                          f_seg(db = s_aux, VAR = "SECTOR"),
-                         f_seg(db = s_aux, VAR = c("cl", "SECTOR"))))  |>
+                         f_seg(db = s_aux, VAR = "SUBS"),
+                         f_seg(db = s_aux, VAR = c("cl", "SUBS"))))  |>
   mutate(Prop_ENTRE = round(Between / Global * 100, 1),
          Prop_DENTRO = round(Within / Global * 100, 1)) %>%
   select(I, Prop_ENTRE, Prop_DENTRO)
