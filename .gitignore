@@ -46,6 +46,7 @@ README.Rmd
 analysis/_draft
 analysis/_raw
 analysis/_templates
+analysis/_submission
 
 # Paper
 analysis/school-segmentation.Rmd
